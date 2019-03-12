@@ -4,6 +4,18 @@ using System.Linq;
 
 namespace Linq_Methods
 {
+    public class Customer
+    {
+        public string Name { get; set; }
+        public double Balance { get; set; }
+        public string Bank { get; set; }
+    }
+    public class BankReport
+    {
+        public string BankName { get; set; }
+        public int BankNumber { get; set; }
+    }
+
     class Program
     {
         static void Main(string[] args)
@@ -17,6 +29,7 @@ namespace Linq_Methods
             IEnumerable<string> LFruits = (from fruit in fruits
                                            where fruit.StartsWith("L")
                                            select fruit).ToList();
+
             Console.WriteLine("---------------------");
             Console.WriteLine("fruits that start with 'L'");
             foreach (string fru in LFruits)
@@ -31,6 +44,7 @@ namespace Linq_Methods
         };
 
             IEnumerable<int> fourSixMultiples = numbers.Where(n => n % 4 == 0 || n % 6 == 0);
+
             Console.WriteLine("---------------------");
             Console.WriteLine("numbers that are divisible by 4 or 6");
 
@@ -50,6 +64,7 @@ namespace Linq_Methods
         };
 
             List<string> descend = names.OrderByDescending(x => x).ToList();
+
             Console.WriteLine("---------------------");
             Console.WriteLine("Names in descending order");
 
@@ -115,7 +130,7 @@ namespace Linq_Methods
 
 
             /*
-                        Partitioning Operations
+            Partitioning Operations
 
                 Store each number in the following List until a perfect square
                 is detected.
@@ -131,12 +146,54 @@ namespace Linq_Methods
             IEnumerable<int> perfectSquare = wheresSquaredo.TakeWhile(n => ((Math.Sqrt(n) % 1) != 0));
 
             Console.WriteLine("---------------------");
+            Console.WriteLine($"List of numbers before perfect square ");
             foreach(int c in perfectSquare)
             {
-                Console.WriteLine($"List of numbers before perfect square {c}");
+            Console.WriteLine($"{c}");
             }
 
+            // Build a collection of customers who are millionaires
 
+/*
+            Given the same customer set, display how many millionaires per bank.
+            Ref: https://stackoverflow.com/questions/7325278/group-by-in-linq
+
+            Example Output:
+            WF 2
+            BOA 1
+            FTB 1
+            CITI 1
+*/
+
+            List<Customer> customers = new List<Customer>()
+            {
+                new Customer(){ Name="Bob Lesman", Balance=80345.66, Bank="FTB"},
+                new Customer(){ Name="Joe Landy", Balance=9284756.21, Bank="WF"},
+                new Customer(){ Name="Meg Ford", Balance=487233.01, Bank="BOA"},
+                new Customer(){ Name="Peg Vale", Balance=7001449.92, Bank="BOA"},
+                new Customer(){ Name="Mike Johnson", Balance=790872.12, Bank="WF"},
+                new Customer(){ Name="Les Paul", Balance=8374892.54, Bank="WF"},
+                new Customer(){ Name="Sid Crosby", Balance=957436.39, Bank="FTB"},
+                new Customer(){ Name="Sarah Ng", Balance=56562389.85, Bank="FTB"},
+                new Customer(){ Name="Tina Fey", Balance=1000000.00, Bank="CITI"},
+                new Customer(){ Name="Sid Brown", Balance=49582.68, Bank="CITI"}
+            };
+
+            IEnumerable<BankReport> millionaireReport = (from customer in customers
+                where customer.Balance >= 1000000
+                group customer by customer.Bank into customerGroup
+                select new BankReport {
+                    BankName = customerGroup.Key,
+                    BankNumber = customerGroup.Count(m => m.Bank == customerGroup.Key)
+                }).ToList();
+
+            Console.WriteLine("---------------------");
+            Console.WriteLine($"List of millionaires per bank ");
+
+            foreach(BankReport b in millionaireReport)
+            {
+                Console.WriteLine($"{b.BankName}  {b.BankNumber}");
+            }
 
         }
     }
